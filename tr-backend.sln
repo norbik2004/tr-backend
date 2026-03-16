@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tr-api", "tr-backend\tr-api.csproj", "{C70BC59F-8F97-4917-8C8A-7BBF1A363379}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tr-api", "tr-api\tr-api.csproj", "{C70BC59F-8F97-4917-8C8A-7BBF1A363379}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tr-repository", "tr-repository\tr-repository.csproj", "{778254FC-B124-44CF-A8D9-6D818F397594}"
 EndProject
