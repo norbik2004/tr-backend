@@ -7,6 +7,7 @@ using tr_core.Entities;
 namespace tr_backend.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class UserController(SignInManager<User> signInManager) : Controller
     {
         [HttpPost("login")]
