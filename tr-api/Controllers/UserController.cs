@@ -1,20 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using tr_core.DTO.User;
+using tr_core.Entities;
 
 namespace tr_backend.Controllers
 {
     [Route("api/[controller]")]
-    public class UserController : Controller
+    public class UserController(SignInManager<User> signInManager) : Controller
     {
         [HttpPost("login")]
-        public IActionResult LogIn()
+        public async Task<IActionResult> LogIn([FromBody] UserLoginRequest request)
         {
-            throw new NotImplementedException();
+            var result = await signInManager.PasswordSignInAsync(
+                request.Login,
+                request.Password,
+                isPersistent: true,
+                lockoutOnFailure: false
+            );
+
+            if (!result.Succeeded)
+                return Unauthorized();
+
+            return Ok();
         }
 
         [HttpPost("logout")]
-        public IActionResult LogOut()
+        public async Task<IActionResult> LogOut()
         {
-            throw new NotImplementedException();
+            await signInManager.SignOutAsync();
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            return Ok(User.Identity.Name);
         }
     }
 }

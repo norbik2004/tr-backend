@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using tr_core.Entities;
 using tr_repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +15,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TrDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<TrDbContext>();
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<TrDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
 // to do modyfikacji pozniej
 builder.Services.AddCors(options =>
@@ -24,9 +27,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -43,9 +46,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseRouting();
+
 app.UseCors("AllowAll");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
