@@ -8,13 +8,13 @@ namespace tr_backend.Controllers
         [HttpPost("login")]
         public IActionResult LogIn()
         {
-            
+            throw new NotImplementedException();
         }
 
         [HttpPost("logout")]
         public IActionResult LogOut()
         {
-
+            throw new NotImplementedException();
         }
     }
 }
