@@ -11,4 +11,9 @@
 		<ProjectReference Include="..\tr-repository\tr-repository.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Mapping\" />
+	  <Folder Include="Services\" />
+	</ItemGroup>
+
 </Project>
