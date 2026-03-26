@@ -10,5 +10,7 @@ namespace tr_core.Entities
     public class User : IdentityUser
     {
         public string? JakiesPoleDodatkowe { get; set; }
+
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
     }
 }
