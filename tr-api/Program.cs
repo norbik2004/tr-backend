@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using tr_core.Entities;
+using tr_core.Interfaces;
 using tr_repository;
+using tr_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TrDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 6;
+    options.User.RequireUniqueEmail = true;
+})
     .AddEntityFrameworkStores<TrDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -27,11 +37,21 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+            .SetIsOriginAllowed(origin => true)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
         });
 });
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
