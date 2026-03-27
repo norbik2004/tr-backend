@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using tr_core.DTO.User;
 using tr_core.Entities;
-using tr_core.Interfaces;
+using tr_service.Exceptions;
 
 namespace tr_backend.Controllers
 {
@@ -16,42 +16,28 @@ namespace tr_backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] UserLoginRequest request)
         {
-            try
-            {
-                if(User.Identities.Any(i => i.IsAuthenticated))
-                    return BadRequest(new { message = "Użytkownik jest już zalogowany" });
+            if(User.Identities.Any(i => i.IsAuthenticated))
+                throw new BadRequestException("User is arelady logged in");
 
-                var result = await _signInManager.PasswordSignInAsync(
-                    request.UserName,
-                    request.Password,
-                    isPersistent: true,
-                    lockoutOnFailure: false
-                );
+            var result = await _signInManager.PasswordSignInAsync(
+                request.UserName,
+                request.Password,
+                isPersistent: true,
+                lockoutOnFailure: false
+            );
 
-                if (!result.Succeeded)
-                    return Unauthorized();
+            if (!result.Succeeded)
+                throw new UnauthorizedException("Wrong password or username");
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Wystąpił błąd podczas logowania", error = ex.Message });
-            }
+            return Ok();
         }
 
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> LogOut()
         {
-            try
-            {
-                await _signInManager.SignOutAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Wystąpił błąd podczas wylogowywania", error = ex.Message });
-            }
+            await _signInManager.SignOutAsync();
+            return Ok();
         }
     }
 }

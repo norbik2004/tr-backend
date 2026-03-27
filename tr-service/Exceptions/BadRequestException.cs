@@ -6,7 +6,27 @@ using System.Threading.Tasks;
 
 namespace tr_service.Exceptions
 {
-    public class BadRequestException(string message) : Exception(message)
+    public class BadRequestException : HttpException
     {
+
+        public BadRequestException(string message)
+            : base(0.0, 400, message, null)
+        {
+        }
+
+        public BadRequestException(string message, object error)
+            : base(0.0, 400, message, error)
+        {
+        }
+
+        public BadRequestException(double subCode, string message)
+            : base(subCode, 400, message, null)
+        {
+        }
+
+        public BadRequestException(double subCode, string message, object error)
+            : base(subCode, 400, message, error)
+        {
+        }
     }
 }

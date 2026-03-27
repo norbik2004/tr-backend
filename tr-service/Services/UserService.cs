@@ -13,7 +13,7 @@ namespace tr_service.Services
             var existingUser = await userManager.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
-                throw new BadRequestException("Użytkownik o podanym adresie email już istnieje");
+                throw new BadRequestException("Account with this email address arelady exists");
 
             var user = new User
             {

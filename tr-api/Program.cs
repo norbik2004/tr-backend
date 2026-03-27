@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using tr_backend.Helpers;
+using tr_backend.Middlewares;
 using tr_core.Entities;
 using tr_core.Interfaces;
 using tr_repository;
@@ -55,6 +57,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -62,6 +66,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+await DbMigrate.MigrateDatabase(app);
 
 app.UseRouting();
 

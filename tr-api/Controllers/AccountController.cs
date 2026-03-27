@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tr_core.DTO.User;
 using tr_core.Interfaces;
+using tr_service.Exceptions;
 
 namespace tr_backend.Controllers
 {
@@ -13,16 +14,8 @@ namespace tr_backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
-            try
-            {
-                await _userService.RegisterUserAsync(request);
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Wystąpił błąd podczas rejestracji", error = ex.Message });
-            }
+            await _userService.RegisterUserAsync(request);
+            return Ok();
         }
     }
 }
