@@ -17,14 +17,10 @@ namespace tr_repository
 
         public DbSet<Post> Posts { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            builder.Entity<User>()
-                .HasMany(u => u.Posts)
-                .WithOne(p => p.User)
-                .HasForeignKey(p => p.UserId)
-                .IsRequired();
-        }
+        public DbSet<UserSetting> UserSettings { get; set; }
+
+        public DbSet<PostPlatform> PostPlatforms { get; set; }
+
+        public DbSet<Platform> Platforms { get; set; }
     }
 }

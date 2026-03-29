@@ -9,8 +9,11 @@ namespace tr_core.Entities
 {
     public class User : IdentityUser
     {
-        public string? JakiesPoleDodatkowe { get; set; }
+        public bool IsSubscribed { get; set; }
+
+        public int PromptAmount { get; set; }
 
         public ICollection<Post> Posts { get; set; } = new List<Post>();
+        public UserSetting UserSetting { get; set; } = null!;
     }
 }
