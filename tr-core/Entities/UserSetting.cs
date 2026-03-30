@@ -8,23 +8,15 @@ using System.Threading.Tasks;
 
 namespace tr_core.Entities
 {
-    public class Post
+    public class UserSetting
     {
         [Key]
-        public int Id { get; set; }
-
         [ForeignKey("User")]
         public required string UserId { get; set; }
-
         public User User { get; set; } = null!;
 
-        public required string PromptText { get; set; }
+        public bool IsDarkMode { get; set; }
 
-        public required string Body { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public ICollection<PostPlatform> PostPlatforms { get; set; } = new List<PostPlatform>();
-
+        public bool ReceiveNotifications { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using tr_repository;
@@ -11,9 +12,11 @@ using tr_repository;
 namespace tr_repository.Migrations
 {
     [DbContext(typeof(TrDbContext))]
-    partial class TrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326215436_PostRelationship")]
+    partial class PostRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,23 +157,6 @@ namespace tr_repository.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("tr_core.Entities.Platform", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Platforms");
-                });
-
             modelBuilder.Entity("tr_core.Entities.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -201,25 +187,6 @@ namespace tr_repository.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("tr_core.Entities.PostPlatform", b =>
-                {
-                    b.Property<int>("PostId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PlatformId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("PostId", "PlatformId");
-
-                    b.HasIndex("PlatformId");
-
-                    b.ToTable("PostPlatforms");
-                });
-
             modelBuilder.Entity("tr_core.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -239,8 +206,8 @@ namespace tr_repository.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsSubscribed")
-                        .HasColumnType("boolean");
+                    b.Property<string>("JakiesPoleDodatkowe")
+                        .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -265,9 +232,6 @@ namespace tr_repository.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("PromptAmount")
-                        .HasColumnType("integer");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -288,22 +252,6 @@ namespace tr_repository.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("tr_core.Entities.UserSetting", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDarkMode")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("ReceiveNotifications")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("UserSettings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -368,52 +316,9 @@ namespace tr_repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("tr_core.Entities.PostPlatform", b =>
-                {
-                    b.HasOne("tr_core.Entities.Platform", "Platform")
-                        .WithMany("PostPlatforms")
-                        .HasForeignKey("PlatformId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("tr_core.Entities.Post", "Post")
-                        .WithMany("PostPlatforms")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Platform");
-
-                    b.Navigation("Post");
-                });
-
-            modelBuilder.Entity("tr_core.Entities.UserSetting", b =>
-                {
-                    b.HasOne("tr_core.Entities.User", "User")
-                        .WithOne("UserSetting")
-                        .HasForeignKey("tr_core.Entities.UserSetting", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("tr_core.Entities.Platform", b =>
-                {
-                    b.Navigation("PostPlatforms");
-                });
-
-            modelBuilder.Entity("tr_core.Entities.Post", b =>
-                {
-                    b.Navigation("PostPlatforms");
-                });
-
             modelBuilder.Entity("tr_core.Entities.User", b =>
                 {
                     b.Navigation("Posts");
-
-                    b.Navigation("UserSetting")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

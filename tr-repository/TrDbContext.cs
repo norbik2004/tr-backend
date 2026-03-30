@@ -16,5 +16,11 @@ namespace tr_repository
         }
 
         public DbSet<Post> Posts { get; set; }
+
+        public DbSet<UserSetting> UserSettings { get; set; }
+
+        public DbSet<PostPlatform> PostPlatforms { get; set; }
+
+        public DbSet<Platform> Platforms { get; set; }
     }
 }
