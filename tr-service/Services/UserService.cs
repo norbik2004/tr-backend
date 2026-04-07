@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using tr_core.DTO.User;
 using tr_core.Entities;
-using tr_core.Interfaces;
+using tr_core.Services;
 using tr_service.Exceptions;
 
 namespace tr_service.Services

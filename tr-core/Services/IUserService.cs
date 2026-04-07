@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using tr_core.DTO.User;
 
-namespace tr_core.Interfaces
+namespace tr_core.Services
 {
     public interface IUserService
     {
