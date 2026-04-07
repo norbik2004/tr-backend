@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tr-service", "tr-service\tr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tr-core", "tr-core\tr-core.csproj", "{A1273F9D-22BC-4CDC-A6CA-FB66E24BACCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A082079C-D5CD-4813-92FF-418B3D26E1F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A1273F9D-22BC-4CDC-A6CA-FB66E24BACCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1273F9D-22BC-4CDC-A6CA-FB66E24BACCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1273F9D-22BC-4CDC-A6CA-FB66E24BACCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A082079C-D5CD-4813-92FF-418B3D26E1F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A082079C-D5CD-4813-92FF-418B3D26E1F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A082079C-D5CD-4813-92FF-418B3D26E1F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A082079C-D5CD-4813-92FF-418B3D26E1F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

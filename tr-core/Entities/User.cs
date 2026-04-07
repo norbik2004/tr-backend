@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace tr_core.Entities
 {
-    public class User : IdentityUser
+    public class User : IdentityUser, IAuditable
     {
         public bool IsSubscribed { get; set; }
-
         public int PromptAmount { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Post> Posts { get; set; } = new List<Post>();
         public UserSetting UserSetting { get; set; } = null!;

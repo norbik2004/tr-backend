@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace tr_core.Entities
 {
-    public class Platform
+    public class Platform : BaseEntity, IAuditable
     {
-        [Key]
-        public int Id { get; set; }
         public string Name { get; set; } = null!;
         public ICollection<PostPlatform> PostPlatforms { get; set; } = new List<PostPlatform>();
     }

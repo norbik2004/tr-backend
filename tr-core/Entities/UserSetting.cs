@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 
 namespace tr_core.Entities
 {
-    public class UserSetting
+    public class UserSetting : BaseEntity, IAuditable
     {
-        [Key]
-        [ForeignKey("User")]
+        [ForeignKey(nameof(User))]
         public required string UserId { get; set; }
         public User User { get; set; } = null!;
-
         public bool IsDarkMode { get; set; }
-
         public bool ReceiveNotifications { get; set; }
     }
 }

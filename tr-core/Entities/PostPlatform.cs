@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace tr_core.Entities
 {
     [PrimaryKey(nameof(PostId), nameof(PlatformId))]
-    public class PostPlatform
+    public class PostPlatform : BaseEntity, IAuditable
     {
-        [ForeignKey("Post")]
+        [ForeignKey(nameof(Post))]
         public int PostId { get; set; }
 
         public Post Post { get; set; } = null!;
 
-        [ForeignKey("Platform")]
+        [ForeignKey(nameof(Platform))]
         public int PlatformId { get; set; }
 
         public Platform Platform { get; set; } = null!;
