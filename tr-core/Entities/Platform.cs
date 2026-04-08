@@ -10,6 +10,6 @@ namespace tr_core.Entities
     public class Platform : BaseEntity, IAuditable
     {
         public string Name { get; set; } = null!;
-        public ICollection<PostPlatform> PostPlatforms { get; set; } = new List<PostPlatform>();
+        public ICollection<PostPlatform> PostPlatforms { get; set; } = [];
     }
 }

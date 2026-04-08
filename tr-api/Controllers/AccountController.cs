@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using tr_core.Consts;
 using tr_core.DTO.User.Request;
 using tr_core.DTO.User.Response;
 using tr_core.Services;
 using tr_service.Exceptions;
+using tr_service.Mapping;
 
 namespace tr_backend.Controllers
 {
@@ -28,7 +30,6 @@ namespace tr_backend.Controllers
                 ?? throw new UnauthorizedException("User is not logged in");
 
             return await userService.GetLoggedInUserInfoAsync(userId);
-
         }
     }
 }

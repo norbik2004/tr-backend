@@ -11,10 +11,9 @@ namespace tr_core.Entities
     {
         public bool IsSubscribed { get; set; }
         public int PromptAmount { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public ICollection<Post> Posts { get; set; } = new List<Post>();
-        public UserSetting UserSetting { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public ICollection<Post> Posts { get; set; } = [];
+        public UserSetting UserSetting { get; set; }
     }
 }

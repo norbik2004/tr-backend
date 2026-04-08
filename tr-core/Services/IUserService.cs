@@ -12,5 +12,6 @@ namespace tr_core.Services
     {
         public Task RegisterUserAsync(UserRegisterRequest request);
         public Task<UserResponse> GetLoggedInUserInfoAsync(string userId);
+        public Task<List<UserResponse>> GetAllUsers(UserPaginatedParamsRequest request);
     }
 }

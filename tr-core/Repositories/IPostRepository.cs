@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using tr_core.Entities;
 
 namespace tr_core.Repositories
 {
-    public interface IRepository<T>
+    public interface IPostRepository : IRepository<Post>
     {
-        Task<T?> GetByIdAsync(string id);
-        Task<List<T>> GetAll();
     }
 }

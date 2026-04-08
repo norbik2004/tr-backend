@@ -11,6 +11,11 @@ namespace tr_repository.Repositories
 {
     public class UserRepository(TrDbContext dbContext) : IUserRepository
     {
+        public async Task<List<User>> GetAll()
+        {
+            return await dbContext.Users.ToListAsync();
+        }
+
         public async Task<User?> GetByIdAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))

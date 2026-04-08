@@ -59,6 +59,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<AutoMapperProfile>();
@@ -79,6 +81,7 @@ await DbMigrate.MigrateDatabase(app);
 using (var scope = app.Services.CreateScope())
 {
     await RoleSeed.Seed(scope.ServiceProvider);
+    await SeedUsers.Seed(scope.ServiceProvider);
 }
 
 app.UseRouting();

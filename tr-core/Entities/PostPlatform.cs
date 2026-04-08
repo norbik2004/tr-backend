@@ -14,14 +14,11 @@ namespace tr_core.Entities
     {
         [ForeignKey(nameof(Post))]
         public int PostId { get; set; }
-
         public Post Post { get; set; } = null!;
 
         [ForeignKey(nameof(Platform))]
         public int PlatformId { get; set; }
-
         public Platform Platform { get; set; } = null!;
-
         public string Status { get; set; } = null!;
     }
 }

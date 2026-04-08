@@ -12,14 +12,29 @@ namespace tr_service.Services
 {
     public class UserService(UserManager<User> userManager, IUserRepository userRepository, IMapper mapper) : IUserService
     {
+        public async Task<List<UserResponse>> GetAllUsers(UserPaginatedParamsRequest request)
+        {
+            var users = await userRepository.GetAll();
+
+            var usersToReturn = mapper.Map<List<UserResponse>>(users);
+
+            for(int i = 0; i < usersToReturn.Count; i++)
+            {
+                List<string> roles = [.. await userManager.GetRolesAsync(users[i])];
+                usersToReturn[i].Roles = roles;
+            }
+
+            return usersToReturn;
+        }
+
         public async Task<UserResponse> GetLoggedInUserInfoAsync(string userId)
         {
             var user = await userRepository.GetByIdAsync(userId)
                 ?? throw new NotFoundException("User not found");
 
-            var userToReturn =  mapper.Map<UserResponse>(user);
-
             List<string> roles = [.. await userManager.GetRolesAsync(user)];
+
+            var userToReturn = mapper.Map<UserResponse>(user);
             userToReturn.Roles = roles;
 
             return userToReturn;
