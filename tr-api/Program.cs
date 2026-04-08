@@ -3,8 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using tr_backend.Helpers;
 using tr_backend.Middlewares;
 using tr_core.Entities;
-using tr_core.Interfaces;
+using tr_core.Repositories;
+using tr_core.Services;
 using tr_repository;
+using tr_repository.Repositories;
+using tr_repository.Seeds;
+using tr_service.Mapping;
 using tr_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +58,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<AutoMapperProfile>();
+});
 
 var app = builder.Build();
 
@@ -67,6 +76,10 @@ if (app.Environment.IsDevelopment())
 }
 
 await DbMigrate.MigrateDatabase(app);
+using (var scope = app.Services.CreateScope())
+{
+    await RoleSeed.Seed(scope.ServiceProvider);
+}
 
 app.UseRouting();
 

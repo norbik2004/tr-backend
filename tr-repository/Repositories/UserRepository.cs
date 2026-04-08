@@ -1,13 +1,26 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using tr_core.Entities;
 using tr_core.Repositories;
 
 namespace tr_repository.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(TrDbContext dbContext) : IUserRepository
     {
+        public async Task<User?> GetByIdAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("User id cannot be empty", nameof(id));
+
+            var user = await dbContext.Users
+                .Include(u => u.Posts)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            return user;
+        }
     }
 }

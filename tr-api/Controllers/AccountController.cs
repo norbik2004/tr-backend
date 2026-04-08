@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using tr_core.DTO.User;
-using tr_core.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using tr_core.DTO.User.Request;
+using tr_core.DTO.User.Response;
+using tr_core.Services;
 using tr_service.Exceptions;
 
 namespace tr_backend.Controllers
@@ -9,13 +12,23 @@ namespace tr_backend.Controllers
     [ApiController]
     public class AccountController(IUserService userService) : ControllerBase
     {
-        private readonly IUserService _userService = userService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
-            await _userService.RegisterUserAsync(request);
+            await userService.RegisterUserAsync(request);
             return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<UserResponse> GetLoggedInUserInfo()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new UnauthorizedException("User is not logged in");
+
+            return await userService.GetLoggedInUserInfoAsync(userId);
+
         }
     }
 }
