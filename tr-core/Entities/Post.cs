@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using tr_core.Enums;
 
 namespace tr_core.Entities
 {
@@ -13,14 +14,10 @@ namespace tr_core.Entities
 
         [ForeignKey(nameof(User))]
         public required string UserId { get; set; }
-
         public User User { get; set; } = null!;
-
         public required string PromptText { get; set; }
-
         public required string Body { get; set; }
-
-        public ICollection<PostPlatform> PostPlatforms { get; set; } = new List<PostPlatform>();
-
+        public required PostStatus Status { get; set; }
+        public ICollection<PostPlatform> PostPlatforms { get; set; } = [];
     }
 }

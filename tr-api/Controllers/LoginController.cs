@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using tr_core.DTO.User;
+using tr_core.DTO.User.Request;
 using tr_core.Entities;
 using tr_service.Exceptions;
 
@@ -11,7 +11,6 @@ namespace tr_backend.Controllers
     [ApiController]
     public class LoginController(SignInManager<User> signInManager) : ControllerBase
     {
-        private readonly SignInManager<User> _signInManager = signInManager;
 
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] UserLoginRequest request)
@@ -19,7 +18,7 @@ namespace tr_backend.Controllers
             if(User.Identities.Any(i => i.IsAuthenticated))
                 throw new BadRequestException("User is arelady logged in");
 
-            var result = await _signInManager.PasswordSignInAsync(
+            var result = await signInManager.PasswordSignInAsync(
                 request.UserName,
                 request.Password,
                 isPersistent: true,
@@ -36,7 +35,7 @@ namespace tr_backend.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> LogOut()
         {
-            await _signInManager.SignOutAsync();
+            await signInManager.SignOutAsync();
             return Ok();
         }
     }

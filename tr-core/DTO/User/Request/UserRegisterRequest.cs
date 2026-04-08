@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace tr_core.DTO.User
+namespace tr_core.DTO.User.Request
 {
     public class UserRegisterRequest
     {
