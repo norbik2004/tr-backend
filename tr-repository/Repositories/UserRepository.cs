@@ -11,7 +11,12 @@ namespace tr_repository.Repositories
 {
     public class UserRepository(TrDbContext dbContext) : IUserRepository
     {
-        public async Task<List<User>> GetAll()
+        public Task AddAsync(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<User>> GetAllAsync()
         {
             return await dbContext.Users.ToListAsync();
         }
@@ -26,6 +31,21 @@ namespace tr_repository.Repositories
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             return user;
+        }
+
+        public void Remove(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await dbContext.SaveChangesAsync();
+        }
+
+        public void Update(User entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

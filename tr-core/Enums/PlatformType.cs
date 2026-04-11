@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace tr_core.Enums
 {
-    public enum PostStatus
+    public enum PlatformType
     {
-        Published,
-        Generated,
-        Draft
+        LinkedIn = 1,
+        Facebook = 2,
+        Instagram = 3
     }
 }

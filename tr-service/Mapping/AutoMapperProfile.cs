@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using tr_core.DTO.Platform.Response;
+using tr_core.DTO.Post.Request;
 using tr_core.DTO.Post.Response;
 using tr_core.DTO.User.Response;
+using tr_core.DTO.UserPlatform.Request;
+using tr_core.DTO.UserPlatform.Response;
 using tr_core.Entities;
 
 namespace tr_service.Mapping
@@ -16,6 +15,12 @@ namespace tr_service.Mapping
         {
             CreateMap<User, UserResponse>();
             CreateMap<Post, PostResponse>();
+            CreateMap<PostRequest, Post>();
+
+            CreateMap<Platform, PlatformResponse>();
+
+            CreateMap<UserPlatform, UserPlatformResponse>();
+            CreateMap<UserPlatformRequest, UserPlatform>();
         }
     }
 }

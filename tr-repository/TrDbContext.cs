@@ -17,12 +17,10 @@ namespace tr_repository
         }
 
         public DbSet<Post> Posts { get; set; }
-
         public DbSet<UserSetting> UserSettings { get; set; }
-
-        public DbSet<PostPlatform> PostPlatforms { get; set; }
-
+        public DbSet<PostPublication> PostPublications { get; set; }
         public DbSet<Platform> Platforms { get; set; }
+        public DbSet<UserPlatform> UserPlatforms { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

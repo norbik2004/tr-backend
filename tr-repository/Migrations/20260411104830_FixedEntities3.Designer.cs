@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using tr_repository;
@@ -11,9 +12,11 @@ using tr_repository;
 namespace tr_repository.Migrations
 {
     [DbContext(typeof(TrDbContext))]
-    partial class TrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260411104830_FixedEntities3")]
+    partial class FixedEntities3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,14 +340,6 @@ namespace tr_repository.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccessToken")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AccountComment")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("AccountUsername")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")

@@ -14,6 +14,7 @@ namespace tr_backend.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [Obsolete]
     public class PostController(IPostService postService, IMapper mapper) : ControllerBase
     {
 
