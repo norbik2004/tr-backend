@@ -14,7 +14,7 @@ namespace tr_service.Services
     {
         public async Task<List<UserResponse>> GetAllUsers(UserPaginatedParamsRequest request)
         {
-            var users = await userRepository.GetAll();
+            var users = await userRepository.GetAllAsync();
 
             var usersToReturn = mapper.Map<List<UserResponse>>(users);
 

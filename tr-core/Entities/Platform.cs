@@ -4,12 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using tr_core.Enums;
 
 namespace tr_core.Entities
 {
     public class Platform : BaseEntity, IAuditable
     {
-        public string Name { get; set; } = null!;
-        public ICollection<PostPlatform> PostPlatforms { get; set; } = [];
+        public PlatformType Type { get; set; }
+        public ICollection<UserPlatform> UserPlatforms { get; set; } = new List<UserPlatform>();
     }
 }

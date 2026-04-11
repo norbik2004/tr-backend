@@ -11,13 +11,13 @@ namespace tr_core.Entities
 {
     public class Post : BaseEntity, IAuditable
     {
-
         [ForeignKey(nameof(User))]
-        public required string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public User User { get; set; } = null!;
-        public required string PromptText { get; set; }
-        public required string Body { get; set; }
-        public required PostStatus Status { get; set; }
-        public ICollection<PostPlatform> PostPlatforms { get; set; } = [];
+        public string Title { get; set; } = null!;
+        public string PromptText { get; set; } = null!;
+        public string Body { get; set; } = null!;
+        public PostStatus Status { get; set; }
+        public ICollection<PostPublication> Publications { get; set; } = new List<PostPublication>();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using tr_backend.Helpers;
 using tr_backend.Middlewares;
 using tr_core.Entities;
@@ -61,6 +62,18 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPlatformService, PlatformService>();
+builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
+builder.Services.AddScoped<IUserPlatformRepository, UserPlatformRepository>();
+builder.Services.AddScoped<IUserPlatformService, UserPlatformService>();
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<AutoMapperProfile>();
@@ -82,6 +95,7 @@ using (var scope = app.Services.CreateScope())
 {
     await RoleSeed.Seed(scope.ServiceProvider);
     await SeedUsers.Seed(scope.ServiceProvider);
+    await SeedPlatforms.Seed(scope.ServiceProvider);
 }
 
 app.UseRouting();

@@ -10,10 +10,12 @@ namespace tr_core.Entities
     public class User : IdentityUser, IAuditable
     {
         public bool IsSubscribed { get; set; }
-        public int PromptAmount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<Post> Posts { get; set; } = [];
-        public UserSetting UserSetting { get; set; }
+        //POSTY USERA
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
+        //PLATFORMY USERA
+        public ICollection<UserPlatform> UserPlatforms { get; set; } = new List<UserPlatform>();
+        public UserSetting? UserSettings { get; set; }
     }
 }
