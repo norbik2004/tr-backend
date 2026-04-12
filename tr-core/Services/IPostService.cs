@@ -13,5 +13,7 @@ namespace tr_core.Services
         public Task<List<PostResponse>> GetAllPostsAsync(PostPaginatedParamsRequest request);
         public Task<PostResponse> GetPostById(int postId);
         public Task<PostResponse> CreatePostAsync(PostRequest request, string userId);
+        public Task DeletePost(int postId, string userId);
+        public Task<PostResponse> UpdatePostAsync(int postId, PostRequest request, string userId);
     }
 }

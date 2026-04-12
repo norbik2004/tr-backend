@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tr_core.DTO.Platform.Response;
+using tr_core.DTO.Post.Response;
 using tr_core.Services;
 
 namespace tr_backend.Controllers
@@ -9,6 +10,7 @@ namespace tr_backend.Controllers
     public class PlatformController(IPlatformService platformService) : ControllerBase
     {
         [HttpGet("platforms")]
+        [ProducesResponseType(typeof(List<PlatformResponse>), StatusCodes.Status200OK)]
         public async Task<List<PlatformResponse>> GetAllAsync()
         {
             return await platformService.GetAllAsync();

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using tr_core.Consts;
 using tr_core.DTO.User.Request;
 using tr_core.DTO.User.Response;
+using tr_core.DTO.UserPlatform.Response;
 using tr_core.Services;
 using tr_service.Mapping;
 using tr_service.Services;
@@ -16,6 +17,8 @@ namespace tr_backend.Controllers
     {
         [Authorize(Roles = Roles.Admin)]
         [HttpGet("users")]
+        [ProducesResponseType(typeof(PaginatedList<UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<PaginatedList<UserResponse>> GetUsers([FromQuery] UserPaginatedParamsRequest request)
         {
             var users = await userService.GetAllUsers(request);

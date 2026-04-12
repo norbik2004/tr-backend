@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using tr_backend.Helpers;
 using tr_core.Consts;
 using tr_core.DTO.User.Request;
 using tr_core.DTO.User.Response;
@@ -16,6 +17,7 @@ namespace tr_backend.Controllers
     {
 
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
             await userService.RegisterUserAsync(request);
@@ -24,10 +26,11 @@ namespace tr_backend.Controllers
 
         [Authorize]
         [HttpGet("me")]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<UserResponse> GetLoggedInUserInfo()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                ?? throw new UnauthorizedException("User is not logged in");
+            var userId = UserHelpers.GetUserIdFromClaims(User);
 
             return await userService.GetLoggedInUserInfoAsync(userId);
         }
