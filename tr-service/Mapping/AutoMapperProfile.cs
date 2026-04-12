@@ -20,6 +20,8 @@ namespace tr_service.Mapping
             CreateMap<Platform, PlatformResponse>();
 
             CreateMap<UserPlatform, UserPlatformResponse>();
+            CreateMap<UserPlatform, UserPlatformResponseLong>();
+            CreateMap<UserPlatformUpdateRequest, UserPlatform>();
             CreateMap<UserPlatformRequest, UserPlatform>();
         }
     }

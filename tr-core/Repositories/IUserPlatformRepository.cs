@@ -11,5 +11,6 @@ namespace tr_core.Repositories
     {
         Task<bool> ExistsAsync(string userId, int platformId);
         Task<List<UserPlatform>> GetUserPlatformsPerUserAsync(string userId);
+        Task<UserPlatform?> GetUserPlatformPerUserByIdAsync(int userPlatformId, string userId);
     }
 }

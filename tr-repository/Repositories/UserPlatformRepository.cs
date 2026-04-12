@@ -32,6 +32,13 @@ namespace tr_repository.Repositories
             return await dbContext.UserPlatforms.FirstOrDefaultAsync(up => up.Id == Int32.Parse(id));
         }
 
+        public async Task<UserPlatform?> GetUserPlatformPerUserByIdAsync(int userPlatformId, string userId)
+        {
+            return await dbContext.UserPlatforms
+                .Include(p => p.Platform)
+                .FirstOrDefaultAsync(up => up.Id == userPlatformId && up.UserId == userId);
+        }
+
         public async Task<List<UserPlatform>> GetUserPlatformsPerUserAsync(string userId)
         {
             return await dbContext.UserPlatforms
@@ -41,7 +48,7 @@ namespace tr_repository.Repositories
 
         public void Remove(UserPlatform entity)
         {
-            throw new NotImplementedException();
+            dbContext.UserPlatforms.Remove(entity);
         }
 
         public async Task SaveChangesAsync()
@@ -51,7 +58,7 @@ namespace tr_repository.Repositories
 
         public void Update(UserPlatform entity)
         {
-            throw new NotImplementedException();
+            dbContext.UserPlatforms.Update(entity);
         }
     }
 }
