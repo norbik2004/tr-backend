@@ -12,5 +12,8 @@ namespace tr_core.Services
     {
         Task<UserPlatformResponse> AddUserPlatformAsync(UserPlatformRequest request, string userId);
         Task<List<UserPlatformResponse>> GetUserPlatformsAsync(string userId);
+        Task<UserPlatformResponseLong> GetUserPlatformByIdAsync(int userPlatformId, string userId);
+        Task RemoveUserPlatform(int userPlatformId, string userId);
+        Task<UserPlatformResponseLong> UpdateUserPlatformAsync(int userPlatformId, UserPlatformUpdateRequest request, string userId);
     }
 }

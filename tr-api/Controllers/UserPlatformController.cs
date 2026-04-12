@@ -14,7 +14,7 @@ namespace tr_backend.Controllers
     public class UserPlatformController(IUserPlatformService userPlatformService) : ControllerBase
     {
         [HttpPost("add")]
-        public async Task<UserPlatformResponse> AddUserPlatform( [FromBody] UserPlatformRequest request)
+        public async Task<UserPlatformResponse> AddUserPlatform([FromBody] UserPlatformRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new UnauthorizedException("User is not logged in");
@@ -29,6 +29,32 @@ namespace tr_backend.Controllers
                 ?? throw new UnauthorizedException("User is not logged in");
 
             return await userPlatformService.GetUserPlatformsAsync(userId);
+        }
+
+        [HttpGet("{userPlatformId:int}")]
+        public async Task<UserPlatformResponseLong> GetUserPlatformsPerUser(int userPlatformId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new UnauthorizedException("User is not logged in");
+
+            return await userPlatformService.GetUserPlatformByIdAsync(userPlatformId, userId);
+        }
+
+        [HttpDelete("{userPlatformId:int}")]
+        public async Task<IActionResult> RemoveUserPlatform(int userPlatformId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new UnauthorizedException("User is not logged in");
+            await userPlatformService.RemoveUserPlatform(userPlatformId, userId);
+            return NoContent();
+        }
+
+        [HttpPut("{userPlatformId:int}")]
+        public async Task<UserPlatformResponseLong> UpdateUserPlatform(int userPlatformId, [FromBody] UserPlatformUpdateRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new UnauthorizedException("User is not logged in");
+            return await userPlatformService.UpdateUserPlatformAsync(userPlatformId, request, userId);
         }
     }
 }

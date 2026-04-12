@@ -37,11 +37,42 @@ namespace tr_service.Services
             return mapper.Map<UserPlatformResponse>(userPlatformEntity);
         }
 
+        public async Task<UserPlatformResponseLong> GetUserPlatformByIdAsync(int userPlatformId, string userId)
+        {
+            var platform = await userPlatformRepository.GetUserPlatformPerUserByIdAsync(userPlatformId, userId)
+                ?? throw new NotFoundException("User platform not found");
+
+            return mapper.Map<UserPlatformResponseLong>(platform);
+        }
+
         public async Task<List<UserPlatformResponse>> GetUserPlatformsAsync(string userId)
         {
             var userPlatforms = await userPlatformRepository.GetUserPlatformsPerUserAsync(userId);
 
             return mapper.Map<List<UserPlatformResponse>>(userPlatforms);
+        }
+
+        public async Task RemoveUserPlatform(int userPlatformId, string userId)
+        {
+            var platform = await userPlatformRepository.GetUserPlatformPerUserByIdAsync(userPlatformId, userId)
+                ?? throw new NotFoundException("User platform not found");
+
+            userPlatformRepository.Remove(platform);
+            await userPlatformRepository.SaveChangesAsync();
+        }
+
+        public async Task<UserPlatformResponseLong> UpdateUserPlatformAsync(int userPlatformId, UserPlatformUpdateRequest request, string userId)
+        {
+            var platform = await userPlatformRepository.GetUserPlatformPerUserByIdAsync(userPlatformId, userId)
+                ?? throw new NotFoundException("User platform not found");
+
+            var platformEntity = mapper.Map(request, platform);
+            platformEntity.Id = userPlatformId;
+
+            userPlatformRepository.Update(platformEntity);
+            await userPlatformRepository.SaveChangesAsync();
+
+            return mapper.Map<UserPlatformResponseLong>(platform);
         }
     }
 }
