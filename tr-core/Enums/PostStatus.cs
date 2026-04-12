@@ -8,8 +8,8 @@ namespace tr_core.Enums
 {
     public enum PostStatus
     {
-        Published,
         Generated,
-        Draft
+        Draft,
+        Done
     }
 }

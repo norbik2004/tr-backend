@@ -19,37 +19,24 @@ namespace tr_service.Services
         public async Task<PostResponse> CreatePostAsync(PostRequest request, string userId)
         {
             var postEntity = mapper.Map<Post>(request);
-
-            postEntity.Status = PostStatus.Draft;
             postEntity.UserId = userId;
-
-            /*
-            var userPlatforms = await postRepository.GetUserPlatformsAsync(userId, request.UserPlatformIds);
-
-            if (userPlatforms.Count != request.UserPlatformIds.Count)
-                throw new Exception("Invalid platforms selected");
-
-            postEntity.Publications = userPlatforms.Select(up => new PostPublication
-            {
-                UserPlatformId = up.Id,
-                Status = "Pending"
-            }).ToList();
-
-            */
 
             await postRepository.AddAsync(postEntity);
             await postRepository.SaveChangesAsync();
+            
+            return mapper.Map<PostResponse>(postEntity);
+        }
 
-            return new PostResponse
-            {
-                Id = postEntity.Id,
-                Title = postEntity.Title,
-                Body = postEntity.Body,
-                Status = postEntity.Status,
-                UserPlatformIds = postEntity.Publications
-            .Select(x => x.UserPlatformId)
-            .ToList()
-            };
+        public async Task DeletePost(int postId, string userId)
+        {
+            var post = await postRepository.GetByIdAsync(postId.ToString()) ?? 
+                throw new NotFoundException("Post was not found");
+
+            if(post.UserId != userId)
+                throw new UnauthorizedException("User is not the owner of the post");
+
+            postRepository.Remove(post);
+            await postRepository.SaveChangesAsync();
         }
 
         public async Task<List<PostResponse>> GetAllPostsAsync(PostPaginatedParamsRequest request)
@@ -65,6 +52,22 @@ namespace tr_service.Services
 
             if (post == null)
                 throw new BadRequestException("Post was not found");
+
+            return mapper.Map<PostResponse>(post);
+        }
+
+        public async Task<PostResponse> UpdatePostAsync(int postId, PostRequest request, string userId)
+        {
+            var post = await postRepository.GetByIdAsync(postId.ToString()) ??
+                throw new NotFoundException("Post was not found");
+
+            if (post.UserId != userId)
+                throw new UnauthorizedException("User is not the owner of the post");
+
+            mapper.Map(request, post);
+
+            postRepository.Update(post);
+            await postRepository.SaveChangesAsync();
 
             return mapper.Map<PostResponse>(post);
         }

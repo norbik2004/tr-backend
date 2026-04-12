@@ -16,14 +16,9 @@ namespace tr_repository.Repositories
             await dbContext.Posts.AddAsync(entity);
         }
 
-        public async Task<List<Post>> GetAll()
+        public async Task<List<Post>> GetAllAsync()
         {
             return await dbContext.Posts.ToListAsync();
-        }
-
-        public Task<List<Post>> GetAllAsync()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<Post?> GetByIdAsync(string id)
@@ -37,7 +32,7 @@ namespace tr_repository.Repositories
 
         public void Remove(Post entity)
         {
-            throw new NotImplementedException();
+            dbContext.Posts.Remove(entity);
         }
 
         public async Task SaveChangesAsync()
@@ -47,7 +42,7 @@ namespace tr_repository.Repositories
 
         public void Update(Post entity)
         {
-            throw new NotImplementedException();
+            dbContext.Posts.Update(entity);
         }
     }
 }
