@@ -1,15 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using tr_core.Enums;
 
 namespace tr_core.Entities
 {
-    public class Post
+    public class Post : BaseEntity, IAuditable
     {
-        [Key]
-        public int Id { get; set; }
+        [ForeignKey(nameof(User))]
+        public string UserId { get; set; } = null!;
+        public User User { get; set; } = null!;
+        public string Title { get; set; } = null!;
+        public string PromptText { get; set; } = null!;
+        public string Body { get; set; } = null!;
+        public PostStatus Status { get; set; }
+        public ICollection<PostPublication> Publications { get; set; } = new List<PostPublication>();
     }
 }

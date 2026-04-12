@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace tr_core.Entities
 {
-    public class User : IdentityUser
+    public class User : IdentityUser, IAuditable
     {
-        public string? JakiesPoleDodatkowe { get; set; }
+        public bool IsSubscribed { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        //POSTY USERA
+        public ICollection<Post> Posts { get; set; } = new List<Post>();
+        //PLATFORMY USERA
+        public ICollection<UserPlatform> UserPlatforms { get; set; } = new List<UserPlatform>();
+        public UserSetting? UserSettings { get; set; }
     }
 }
