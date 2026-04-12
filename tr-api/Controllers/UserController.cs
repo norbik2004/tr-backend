@@ -19,6 +19,7 @@ namespace tr_backend.Controllers
         [HttpGet("users")]
         [ProducesResponseType(typeof(PaginatedList<UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<PaginatedList<UserResponse>> GetUsers([FromQuery] UserPaginatedParamsRequest request)
         {
             var users = await userService.GetAllUsers(request);
