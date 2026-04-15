@@ -9,10 +9,15 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="Google.GenAI" Version="1.6.1" />
   </ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\tr-repository\tr-repository.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Gemini\" />
 	</ItemGroup>
 
 </Project>
