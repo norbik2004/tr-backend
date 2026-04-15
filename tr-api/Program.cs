@@ -11,8 +11,13 @@ using tr_repository.Repositories;
 using tr_repository.Seeds;
 using tr_service.Mapping;
 using tr_service.Services;
+using dotenv.net;
+using tr_core.Services.Gemini;
+using tr_service.Gemini;
 
 var builder = WebApplication.CreateBuilder(args);
+
+DotEnv.Load();
 
 // Add services to the container.
 
@@ -89,6 +94,7 @@ builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
 builder.Services.AddScoped<IUserPlatformRepository, UserPlatformRepository>();
 builder.Services.AddScoped<IUserPlatformService, UserPlatformService>();
 
+builder.Services.AddSingleton<IGeminiService, GeminiService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
