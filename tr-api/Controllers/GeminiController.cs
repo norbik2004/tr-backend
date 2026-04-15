@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using tr_core.Enums;
 using tr_core.DTO.Gemini;
 using tr_core.Services.Gemini;
+using tr_core.DTO.Gemini.Request;
 
 namespace tr_backend.Controllers
 {
@@ -11,9 +13,9 @@ namespace tr_backend.Controllers
     public class GeminiController(IGeminiService geminiService) : ControllerBase
     {
         [HttpPost("test-gemini")]
-        public async Task<GeminiResponse> TestGemini(string prompt)
+        public async Task<GeminiResponse> TestGemini( [FromForm] GeminiRequest request)
         {
-            return await geminiService.SendTestRequestToGemini(prompt);
+            return await geminiService.SendRequestToGemini(request);
         }
     }
 }

@@ -8,34 +8,53 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using tr_core.DTO.Gemini;
+using tr_core.DTO.Gemini.Request;
+using tr_core.Enums;
 using tr_core.Services.Gemini;
 using tr_service.Exceptions;
 
 namespace tr_service.Gemini
 {
-    public class GeminiService(ILogger<IGeminiService> logger) : IGeminiService
+    public class GeminiService(ILogger<IGeminiService> logger, Client geminiClient, GeminiLLMConfig config) : IGeminiService
     {
-        public async Task<GeminiResponse> SendTestRequestToGemini(string prompt)
+        public async Task<GeminiResponse> SendRequestToGemini(GeminiRequest request)
         {
-            var envVars = DotEnv.Read();
+            try
+            {
+                logger.LogInformation("Sending request to Gemini");
 
+                var response = await geminiClient.Models.GenerateContentAsync(
+                    model: request.Model.ToModelString(),
+                    contents: request.Prompt,
+                    config: config.GetConfig()
+                );
 
-            var geminiClient = new Client(apiKey: envVars["GEMINI_API_KEY"]);
+                var text = response?.Candidates?
+                    .FirstOrDefault()?
+                    .Content?
+                    .Parts?
+                    .FirstOrDefault()?
+                    .Text;
 
-            logger.LogInformation("Gemini client has been created");
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    logger.LogWarning("Empty response from Gemini");
+                    throw new BadRequestException("Gemini returned null");
+                }
 
-            var response = await geminiClient.Models.GenerateContentAsync(
-              model: "gemini-3-flash-preview", contents: prompt
-            );
+                logger.LogInformation("Response received from Gemini");
 
-            logger.LogInformation("Gemini client has generated a response");
+                return new GeminiResponse
+                {
+                    Response = text
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while calling Gemini");
 
-            var geminiResponse = new GeminiResponse 
-            { 
-                Response = response.Candidates[0].Content.Parts[0].Text  ?? ""
-            };
-
-            return geminiResponse;
+                throw new BadRequestException("Error while communicating with gemini", ex);
+            }
         }
     }
 }

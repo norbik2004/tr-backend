@@ -1,3 +1,5 @@
+using dotenv.net;
+using Google.GenAI;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -6,18 +8,27 @@ using tr_backend.Middlewares;
 using tr_core.Entities;
 using tr_core.Repositories;
 using tr_core.Services;
+using tr_core.Services.Gemini;
 using tr_repository;
 using tr_repository.Repositories;
 using tr_repository.Seeds;
+using tr_service.Gemini;
 using tr_service.Mapping;
 using tr_service.Services;
-using dotenv.net;
-using tr_core.Services.Gemini;
-using tr_service.Gemini;
 
 var builder = WebApplication.CreateBuilder(args);
 
 DotEnv.Load();
+
+builder.Services.AddSingleton<Client>(sp =>
+{
+    var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+
+    if (string.IsNullOrEmpty(apiKey))
+        throw new Exception("Missing GEMINI_API_KEY in enviromental variables");
+
+    return new Client(apiKey: apiKey);
+});
 
 // Add services to the container.
 
@@ -94,7 +105,8 @@ builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
 builder.Services.AddScoped<IUserPlatformRepository, UserPlatformRepository>();
 builder.Services.AddScoped<IUserPlatformService, UserPlatformService>();
 
-builder.Services.AddSingleton<IGeminiService, GeminiService>();
+builder.Services.AddScoped<IGeminiService, GeminiService>();
+builder.Services.AddSingleton<GeminiLLMConfig>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
