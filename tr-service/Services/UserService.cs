@@ -40,6 +40,37 @@ namespace tr_service.Services
             return userToReturn;
         }
 
+        public async Task<UserSettingsResponse> GetSettingsAsync(string userId)
+        {
+            var user = await userRepository.GetByIdAsync(userId)
+                ?? throw new NotFoundException("User not found");
+
+            var settings = user.UserSettings ?? throw new NotFoundException("User settings not found");
+
+            return mapper.Map<UserSettingsResponse>(settings);
+        }
+
+        public async Task<UserSettingsResponse> UpdateSettingsAsync(string userId, UserSettingsRequest request)
+        {
+            var user = await userRepository.GetByIdAsync(userId)
+                ?? throw new NotFoundException("User not found");
+
+            if (user.UserSettings == null)
+            {
+                user.UserSettings = mapper.Map<UserSetting>(request);
+                user.UserSettings.UserId = user.Id;
+                await userRepository.SaveChangesAsync();
+                return mapper.Map<UserSettingsResponse>(user.UserSettings);
+            }
+
+            mapper.Map(request, user.UserSettings);
+
+            userRepository.Update(user);
+            await userRepository.SaveChangesAsync();
+
+            return mapper.Map<UserSettingsResponse>(user.UserSettings);
+        }
+
         public async Task RegisterUserAsync(UserRegisterRequest request)
         { 
             var existingUser = await userManager.FindByEmailAsync(request.Email);
@@ -64,6 +95,16 @@ namespace tr_service.Services
             }
 
             await userManager.AddToRoleAsync(user, Roles.User);
+
+            var settings = new UserSetting
+            {
+                UserId = user.Id,
+                IsDarkMode = false,
+                ReceiveNotifications = true
+            };
+
+            user.UserSettings = settings;
+            await userRepository.SaveChangesAsync();
         }
     }
 }
