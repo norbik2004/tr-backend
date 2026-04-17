@@ -12,7 +12,7 @@ namespace tr_backend.Controllers
     [Route("api/[controller]")]
     public class GeminiController(IGeminiService geminiService) : ControllerBase
     {
-        [HttpPost("test-gemini")]
+        [HttpPost("ask-gemini")]
         public async Task<GeminiResponse> TestGemini( [FromForm] GeminiRequest request)
         {
             return await geminiService.SendRequestToGemini(request);
