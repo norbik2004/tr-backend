@@ -3,10 +3,11 @@ using tr_core.DTO.Platform.Response;
 using tr_core.DTO.Post.Request;
 using tr_core.DTO.Post.Response;
 using tr_core.DTO.User.Response;
-using tr_core.DTO.User.Request;
 using tr_core.DTO.UserPlatform.Request;
 using tr_core.DTO.UserPlatform.Response;
 using tr_core.Entities;
+using tr_core.DTO.UserSetting.Request;
+using tr_core.DTO.UserSetting.Response;
 
 namespace tr_service.Mapping
 {
@@ -25,8 +26,8 @@ namespace tr_service.Mapping
             CreateMap<UserPlatformUpdateRequest, UserPlatform>();
             CreateMap<UserPlatformRequest, UserPlatform>();
 
-            CreateMap<UserSetting, UserSettingsResponse>();
-            CreateMap<UserSettingsRequest, UserSetting>();
+            CreateMap<UserSetting, UserSettingResponse>();
+            CreateMap<UserSettingRequest, UserSetting>();
         }
     }
 }

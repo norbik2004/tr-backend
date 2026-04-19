@@ -27,23 +27,5 @@ namespace tr_backend.Controllers
             return await PaginatedList<UserResponse>.CreateAsync(users.AsQueryable(), mapper, request.PageIndex, request.PageSize);
         }
 
-        [Authorize]
-        [HttpGet("settings")]
-        [ProducesResponseType(typeof(UserSettingsResponse), StatusCodes.Status200OK)]
-        public async Task<UserSettingsResponse> GetMySettings()
-        {
-            var userId = Helpers.UserHelpers.GetUserIdFromClaims(User);
-            return await userService.GetSettingsAsync(userId);
-        }
-
-        [Authorize]
-        [HttpPut("settings")]
-        [ProducesResponseType(typeof(UserSettingsResponse), StatusCodes.Status200OK)]
-        public async Task<UserSettingsResponse> UpdateMySettings([FromBody] UserSettingsRequest request)
-        {
-            var userId = Helpers.UserHelpers.GetUserIdFromClaims(User);
-            return await userService.UpdateSettingsAsync(userId, request);
-        }
-
     }
 }
