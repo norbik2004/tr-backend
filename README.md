@@ -121,11 +121,6 @@ Hosted on Microsoft Azure App Service.
 - Cloud deployed backend
 - Microsoft Azure App Service
 
-### Example
-
-```http
-GET https://team-red-api.azurewebsites.net/api/items
-```
 
 # Getting Started
 
