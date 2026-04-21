@@ -64,6 +64,16 @@ namespace tr_service.Services
             }
 
             await userManager.AddToRoleAsync(user, Roles.User);
+
+            var settings = new UserSetting
+            {
+                UserId = user.Id,
+                IsDarkMode = true,
+                ReceiveNotifications = false
+            };
+
+            user.UserSettings = settings;
+            await userRepository.SaveChangesAsync();
         }
     }
 }
