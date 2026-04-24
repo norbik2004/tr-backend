@@ -14,7 +14,8 @@ using tr_repository.Repositories;
 using tr_repository.Seeds;
 using tr_service.Gemini;
 using tr_service.Mapping;
-using tr_service.Services;
+using tr_service.Services;  
+using tr_service.LinkedIn;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,26 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<LinkedInConfig>(sp =>
+{
+    var clientId = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_ID");
+    var clientSecret = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_SECRET");
+    var redirect = Environment.GetEnvironmentVariable("LINKEDIN_REDIRECT_URI");
+
+    if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(redirect))
+        throw new Exception("Missing LINKEDIN_* environment variables");
+
+    return new LinkedInConfig
+    {
+        ClientId = clientId,
+        ClientSecret = clientSecret,
+        RedirectUri = redirect
+    };
+});
+
+builder.Services.AddHttpClient<ILinkedInService, LinkedInService>();
 
 builder.Services.AddDbContext<TrDbContext>(options =>
     options.UseNpgsql(
