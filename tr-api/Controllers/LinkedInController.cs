@@ -29,7 +29,7 @@ namespace tr_backend.Controllers
         {
             var redirect = _config.RedirectUri;
             var clientId = _config.ClientId;
-            var scopes = "r_liteprofile%20r_emailaddress%20w_member_social";
+            var scopes = "openid%20profile%20w_member_social%20email";
             var state = Guid.NewGuid().ToString();
 
             var url = $"https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id={clientId}&redirect_uri={Uri.EscapeDataString(redirect)}&scope={scopes}&state={state}";
