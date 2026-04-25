@@ -16,6 +16,8 @@ using tr_service.Gemini;
 using tr_service.Mapping;
 using tr_service.Services;  
 using tr_service.LinkedIn;
+using Microsoft.AspNetCore.Http;
+using AspNet.Security.OAuth.LinkedIn;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,22 +41,33 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
-builder.Services.AddSingleton<LinkedInConfig>(sp =>
+var linkedinClientId = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_ID");
+var linkedinClientSecret = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_SECRET");
+var linkedinRedirect = Environment.GetEnvironmentVariable("LINKEDIN_REDIRECT_URI");
+
+if (string.IsNullOrEmpty(linkedinClientId) || string.IsNullOrEmpty(linkedinClientSecret) || string.IsNullOrEmpty(linkedinRedirect))
+    throw new Exception("Missing LINKEDIN_* environment variables");
+
+var linkedInConfig = new LinkedInConfig
 {
-    var clientId = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_ID");
-    var clientSecret = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_SECRET");
-    var redirect = Environment.GetEnvironmentVariable("LINKEDIN_REDIRECT_URI");
+    ClientId = linkedinClientId,
+    ClientSecret = linkedinClientSecret,
+    RedirectUri = linkedinRedirect
+};
+builder.Services.AddSingleton(linkedInConfig);
 
-    if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(redirect))
-        throw new Exception("Missing LINKEDIN_* environment variables");
-
-    return new LinkedInConfig
+builder.Services.AddAuthentication()
+    .AddLinkedIn(options =>
     {
-        ClientId = clientId,
-        ClientSecret = clientSecret,
-        RedirectUri = redirect
-    };
-});
+        options.ClientId = linkedinClientId;
+        options.ClientSecret = linkedinClientSecret;
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+        options.Scope.Add("w_member_social");
+        options.SaveTokens = true;
+        options.CallbackPath = new PathString("/signin-linkedin-mw-callback");
+    });
 
 builder.Services.AddHttpClient<ILinkedInService, LinkedInService>();
 
