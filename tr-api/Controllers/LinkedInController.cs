@@ -5,35 +5,26 @@ using tr_backend.Helpers;
 using System.Threading.Tasks;
 using tr_core.DTO.UserPlatform.Request;
 using tr_service.LinkedIn;
+using tr_core.DTO.LinkedIn;
+using tr_core.DTO.LinkedIn.Request;
 
 namespace tr_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class LinkedInController : ControllerBase
+    public class LinkedInController(ILinkedInService _linkedInService, IUserPlatformService _userPlatformService, LinkedInConfig _lconfig, IConfiguration _config) : ControllerBase
     {
-        private readonly ILinkedInService _linkedInService;
-        private readonly IUserPlatformService _userPlatformService;
-        private readonly LinkedInConfig _config;
-
-        public LinkedInController(ILinkedInService linkedInService, IUserPlatformService userPlatformService, LinkedInConfig config)
-        {
-            _linkedInService = linkedInService;
-            _userPlatformService = userPlatformService;
-            _config = config;
-        }
 
         [HttpGet("authorize")]
-        public IActionResult GetAuthorizationUrl(/*[FromQuery] int platformId*/)
+        public IActionResult GetAuthorizationUrl()
         {
-            var redirect = _config.RedirectUri;
-            var clientId = _config.ClientId;
+            var redirect = _lconfig.RedirectUri;
+            var clientId = _lconfig.ClientId;
             var scopes = "openid%20profile%20w_member_social%20email";
-            //var state = $"{Guid.NewGuid()}|{platformId}";
             var state = $"{Guid.NewGuid()}|1";
 
-            var url = $"https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id={clientId}&redirect_uri={Uri.EscapeDataString(redirect)}&scope={scopes}&state={Uri.EscapeDataString(state)}";
+            var url = $"{_config["LinkedIn:BaseUrl"]}authorization?response_type=code&client_id={clientId}&redirect_uri={Uri.EscapeDataString(redirect)}&scope={scopes}&state={Uri.EscapeDataString(state)}";
 
             return Ok(new { url });
         }
@@ -47,10 +38,10 @@ namespace tr_backend.Controllers
                 return BadRequest("Missing or invalid state parameter");
 
             var parts = state.Split('|');
-            if (!int.TryParse(parts[^1], out var platformId))
+            if (!int.TryParse(parts.Last(), out var platformId))
                 return BadRequest("Invalid platform id in state");
 
-            var accessToken = await _linkedInService.ExchangeCodeForAccessToken(code, _config.RedirectUri);
+            var accessToken = await _linkedInService.ExchangeCodeForAccessToken(code, _lconfig.RedirectUri);
             var personId = await _linkedInService.GetPersonId(accessToken);
 
             var request = new UserPlatformRequest
@@ -68,7 +59,7 @@ namespace tr_backend.Controllers
         }
 
         [HttpPost("post")]
-        public async Task<IActionResult> CreatePost([FromBody] tr_core.DTO.LinkedIn.Request.LinkedInPostRequest request)
+        public async Task<IActionResult> CreatePost([FromBody] LinkedInPostRequest request)
         {
             var userId = UserHelpers.GetUserIdFromClaims(User);
             var userPlatform = await _userPlatformService.GetUserPlatformByIdAsync(request.UserPlatformId, userId);
@@ -76,9 +67,13 @@ namespace tr_backend.Controllers
             if (string.IsNullOrEmpty(userPlatform.AccessToken) || string.IsNullOrEmpty(userPlatform.ExternalAccountId))
                 return BadRequest("Missing access token or external account id for the selected platform");
 
-            var authorUrn = $"urn:li:person:{userPlatform.ExternalAccountId}";
+            var linkedInPostDTO = new LinkedInPostDTO
+            {
+                UserPlatform = userPlatform,
+                Request = request
+            };
 
-            await _linkedInService.PostTextAsync(userPlatform.AccessToken!, authorUrn, request.Text);
+            await _linkedInService.PostTextAsync(linkedInPostDTO);
 
             return Ok();
         }

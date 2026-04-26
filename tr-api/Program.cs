@@ -39,7 +39,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
 
 var linkedinClientId = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_ID");
 var linkedinClientSecret = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_SECRET");

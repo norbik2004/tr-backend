@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -5,20 +6,14 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using tr_core.DTO.LinkedIn;
 using tr_core.Services;
+using tr_service.Exceptions;
 
 namespace tr_service.LinkedIn
 {
-    public class LinkedInService : ILinkedInService
+    public class LinkedInService(HttpClient _client, LinkedInConfig _lconfig, IConfiguration _config) : ILinkedInService
     {
-        private readonly HttpClient _client;
-        private readonly LinkedInConfig _config;
-
-        public LinkedInService(HttpClient httpClient, LinkedInConfig config)
-        {
-            _client = httpClient;
-            _config = config;
-        }
 
         public async Task<string> ExchangeCodeForAccessToken(string code, string redirectUri)
         {
@@ -27,16 +22,16 @@ namespace tr_service.LinkedIn
                 ["grant_type"] = "authorization_code",
                 ["code"] = code,
                 ["redirect_uri"] = redirectUri,
-                ["client_id"] = _config.ClientId,
-                ["client_secret"] = _config.ClientSecret
+                ["client_id"] = _lconfig.ClientId,
+                ["client_secret"] = _lconfig.ClientSecret
             };
 
-            var resp = await _client.PostAsync("https://www.linkedin.com/oauth/v2/accessToken", new FormUrlEncodedContent(values));
+            var resp = await _client.PostAsync($"{_config["LinkedIn:BaseUrl"]}accessToken", new FormUrlEncodedContent(values));
             var json = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
             {
-                throw new tr_service.Exceptions.BadRequestException($"LinkedIn token exchange failed: {resp.StatusCode} - {json}");
+                throw new BadRequestException($"LinkedIn token exchange failed: {resp.StatusCode} - {json}");
             }
 
             try
@@ -44,9 +39,9 @@ namespace tr_service.LinkedIn
                 using var doc = JsonDocument.Parse(json);
                 return doc.RootElement.GetProperty("access_token").GetString()!;
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                throw new Exception("Failed to parse access token from LinkedIn response.", ex);
+                throw new InvalidOperationException("Failed to parse access token from LinkedIn response.", ex);
             }
         }
 
@@ -55,12 +50,12 @@ namespace tr_service.LinkedIn
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
             _client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
-            var resp = await _client.GetAsync("https://api.linkedin.com/v2/userinfo");
+            var resp = await _client.GetAsync($"{_config["LinkedIn:ApiUrl"]}userinfo");
             var json = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
             {
-                throw new tr_service.Exceptions.BadRequestException($"LinkedIn /userinfo failed: {resp.StatusCode} - {json}");
+                throw new BadRequestException($"LinkedIn /userinfo failed: {resp.StatusCode} - {json}");
             }
 
             try
@@ -74,9 +69,9 @@ namespace tr_service.LinkedIn
                 if (root.TryGetProperty("sub", out var subProp) && subProp.ValueKind == JsonValueKind.String)
                     return subProp.GetString()!;
 
-                throw new tr_service.Exceptions.BadRequestException($"Unable to locate person id in LinkedIn response: {json}");
+                throw new BadRequestException($"Unable to locate person id in LinkedIn response: {json}");
             }
-            catch (tr_service.Exceptions.BadRequestException)
+            catch (BadRequestException)
             {
                 throw;
             }
@@ -86,8 +81,12 @@ namespace tr_service.LinkedIn
             }
         }
 
-        public async Task PostTextAsync(string accessToken, string authorUrn, string text)
+        public async Task PostTextAsync(LinkedInPostDTO linkedInPostDTO)
         {
+            var accessToken = linkedInPostDTO.UserPlatform.AccessToken;
+            var authorUrn = $"urn:li:person:{linkedInPostDTO.UserPlatform.ExternalAccountId}";
+            var text = linkedInPostDTO.Request.Text;
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             _client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
             _client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
@@ -112,12 +111,12 @@ namespace tr_service.LinkedIn
             raw = raw.Replace("com_linkedin_ugc_ShareContent", "com.linkedin.ugc.ShareContent")
                      .Replace("com_linkedin_ugc_MemberNetworkVisibility", "com.linkedin.ugc.MemberNetworkVisibility");
 
-            var resp = await _client.PostAsync("https://api.linkedin.com/v2/ugcPosts", new StringContent(raw, Encoding.UTF8, "application/json"));
+            var resp = await _client.PostAsync($"{_config["LinkedIn:ApiUrl"]}ugcPosts", new StringContent(raw, Encoding.UTF8, "application/json"));
             var json = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
             {
-                throw new tr_service.Exceptions.BadRequestException($"LinkedIn post failed: {resp.StatusCode} - {json}");
+                throw new BadRequestException($"LinkedIn post failed: {resp.StatusCode} - {json}");
             }
         }
     }
