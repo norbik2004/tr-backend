@@ -14,7 +14,10 @@ using tr_repository.Repositories;
 using tr_repository.Seeds;
 using tr_service.Gemini;
 using tr_service.Mapping;
-using tr_service.Services;
+using tr_service.Services;  
+using tr_service.LinkedIn;
+using Microsoft.AspNetCore.Http;
+using AspNet.Security.OAuth.LinkedIn;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +39,36 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var linkedinClientId = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_ID");
+var linkedinClientSecret = Environment.GetEnvironmentVariable("LINKEDIN_CLIENT_SECRET");
+var linkedinRedirect = Environment.GetEnvironmentVariable("LINKEDIN_REDIRECT_URI");
+
+if (string.IsNullOrEmpty(linkedinClientId) || string.IsNullOrEmpty(linkedinClientSecret) || string.IsNullOrEmpty(linkedinRedirect))
+    throw new Exception("Missing LINKEDIN_* environment variables");
+
+var linkedInConfig = new LinkedInConfig
+{
+    ClientId = linkedinClientId,
+    ClientSecret = linkedinClientSecret,
+    RedirectUri = linkedinRedirect
+};
+builder.Services.AddSingleton(linkedInConfig);
+
+builder.Services.AddAuthentication()
+    .AddLinkedIn(options =>
+    {
+        options.ClientId = linkedinClientId;
+        options.ClientSecret = linkedinClientSecret;
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+        options.Scope.Add("w_member_social");
+        options.SaveTokens = true;
+        options.CallbackPath = new PathString("/signin-linkedin-mw-callback");
+    });
+
+builder.Services.AddHttpClient<ILinkedInService, LinkedInService>();
 
 builder.Services.AddDbContext<TrDbContext>(options =>
     options.UseNpgsql(
