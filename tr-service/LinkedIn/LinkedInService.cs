@@ -12,7 +12,7 @@ using tr_service.Exceptions;
 
 namespace tr_service.LinkedIn
 {
-    public class LinkedInService(HttpClient _client, LinkedInConfig _lconfig, IConfiguration _config) : ILinkedInService
+    public class LinkedInService(HttpClient client, LinkedInConfig enviromentalConfig, IConfiguration appsettingsConfig) : ILinkedInService
     {
 
         public async Task<string> ExchangeCodeForAccessToken(string code, string redirectUri)
@@ -22,11 +22,11 @@ namespace tr_service.LinkedIn
                 ["grant_type"] = "authorization_code",
                 ["code"] = code,
                 ["redirect_uri"] = redirectUri,
-                ["client_id"] = _lconfig.ClientId,
-                ["client_secret"] = _lconfig.ClientSecret
+                ["client_id"] = enviromentalConfig.ClientId,
+                ["client_secret"] = enviromentalConfig.ClientSecret
             };
 
-            var resp = await _client.PostAsync($"{_config["LinkedIn:BaseUrl"]}accessToken", new FormUrlEncodedContent(values));
+            var resp = await client.PostAsync($"{appsettingsConfig["LinkedIn:BaseUrl"]}accessToken", new FormUrlEncodedContent(values));
             var json = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
@@ -47,10 +47,10 @@ namespace tr_service.LinkedIn
 
         public async Task<string> GetPersonId(string accessToken)
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            _client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
-            _client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
-            var resp = await _client.GetAsync($"{_config["LinkedIn:ApiUrl"]}userinfo");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
+            client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
+            var resp = await client.GetAsync($"{appsettingsConfig["LinkedIn:ApiUrl"]}userinfo");
             var json = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
@@ -87,9 +87,9 @@ namespace tr_service.LinkedIn
             var authorUrn = $"urn:li:person:{linkedInPostDTO.UserPlatform.ExternalAccountId}";
             var text = linkedInPostDTO.Request.Text;
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            _client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
-            _client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
+            client.DefaultRequestHeaders.Add("X-Restli-Protocol-Version", "2.0.0");
 
             var body = new
             {
@@ -111,7 +111,7 @@ namespace tr_service.LinkedIn
             raw = raw.Replace("com_linkedin_ugc_ShareContent", "com.linkedin.ugc.ShareContent")
                      .Replace("com_linkedin_ugc_MemberNetworkVisibility", "com.linkedin.ugc.MemberNetworkVisibility");
 
-            var resp = await _client.PostAsync($"{_config["LinkedIn:ApiUrl"]}ugcPosts", new StringContent(raw, Encoding.UTF8, "application/json"));
+            var resp = await client.PostAsync($"{appsettingsConfig["LinkedIn:ApiUrl"]}ugcPosts", new StringContent(raw, Encoding.UTF8, "application/json"));
             var json = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)

@@ -13,18 +13,20 @@ namespace tr_backend.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class LinkedInController(ILinkedInService _linkedInService, IUserPlatformService _userPlatformService, LinkedInConfig _lconfig, IConfiguration _config) : ControllerBase
+    public class LinkedInController(ILinkedInService linkedInService, IUserPlatformService userPlatformService,
+        LinkedInConfig enviromentalConfig, IConfiguration appsettingsConfig) : ControllerBase
     {
 
         [HttpGet("authorize")]
         public IActionResult GetAuthorizationUrl()
         {
-            var redirect = _lconfig.RedirectUri;
-            var clientId = _lconfig.ClientId;
+            var redirect = enviromentalConfig.RedirectUri;
+            var clientId = enviromentalConfig.ClientId;
             var scopes = "openid%20profile%20w_member_social%20email";
             var state = $"{Guid.NewGuid()}|1";
 
-            var url = $"{_config["LinkedIn:BaseUrl"]}authorization?response_type=code&client_id={clientId}&redirect_uri={Uri.EscapeDataString(redirect)}&scope={scopes}&state={Uri.EscapeDataString(state)}";
+            var url = $"{appsettingsConfig["LinkedIn:BaseUrl"]}authorization?response_type=code&client_id={clientId}" +
+                $"&redirect_uri={Uri.EscapeDataString(redirect)}&scope={scopes}&state={Uri.EscapeDataString(state)}";
 
             return Ok(new { url });
         }
@@ -41,8 +43,8 @@ namespace tr_backend.Controllers
             if (!int.TryParse(parts.Last(), out var platformId))
                 return BadRequest("Invalid platform id in state");
 
-            var accessToken = await _linkedInService.ExchangeCodeForAccessToken(code, _lconfig.RedirectUri);
-            var personId = await _linkedInService.GetPersonId(accessToken);
+            var accessToken = await linkedInService.ExchangeCodeForAccessToken(code, enviromentalConfig.RedirectUri);
+            var personId = await linkedInService.GetPersonId(accessToken);
 
             var request = new UserPlatformRequest
             {
@@ -53,7 +55,7 @@ namespace tr_backend.Controllers
                 AccountComment = ""
             };
 
-            var result = await _userPlatformService.AddUserPlatformAsync(request, userId);
+            var result = await userPlatformService.AddUserPlatformAsync(request, userId);
 
             return Ok(result);
         }
@@ -62,7 +64,7 @@ namespace tr_backend.Controllers
         public async Task<IActionResult> CreatePost([FromBody] LinkedInPostRequest request)
         {
             var userId = UserHelpers.GetUserIdFromClaims(User);
-            var userPlatform = await _userPlatformService.GetUserPlatformByIdAsync(request.UserPlatformId, userId);
+            var userPlatform = await userPlatformService.GetUserPlatformByIdAsync(request.UserPlatformId, userId);
 
             if (string.IsNullOrEmpty(userPlatform.AccessToken) || string.IsNullOrEmpty(userPlatform.ExternalAccountId))
                 return BadRequest("Missing access token or external account id for the selected platform");
@@ -73,7 +75,7 @@ namespace tr_backend.Controllers
                 Request = request
             };
 
-            await _linkedInService.PostTextAsync(linkedInPostDTO);
+            await linkedInService.PostTextAsync(linkedInPostDTO);
 
             return Ok();
         }
