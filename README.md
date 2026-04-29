@@ -14,6 +14,14 @@ The platform allows users to:
 The goal of the project is to provide backend infrastructure for an AI-powered social media management system.
 
 ---
+## .env file
+
+GEMINI_API_KEY=YOUR GEMINI API KEY
+LINKEDIN_CLIENT_ID=YOUR LINKEDIN CLIENT ID
+LINKEDIN_CLIENT_SECRET=YOUR LINKEDIN SECRET 
+LINKEDIN_REDIRECT_URI=LINKED IN REDIRECT URI
+
+---
 
 ## Core Features
 
