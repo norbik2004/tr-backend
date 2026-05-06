@@ -6,8 +6,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using tr_core.DTO.LinkedIn;
 using tr_core.DTO.LinkedIn.Request;
+using tr_core.DTO.LinkedIn.Response;
 using tr_core.Services;
 using tr_service.Exceptions;
 
@@ -46,7 +48,7 @@ namespace tr_service.LinkedIn
             }
         }
 
-        public async Task<string> GetPersonId(string accessToken)
+        public async Task<LinkedInAccountInfoResponse> GetAccountInfo(string accessToken)
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");
@@ -64,21 +66,19 @@ namespace tr_service.LinkedIn
                 using var doc = JsonDocument.Parse(json);
                 var root = doc.RootElement;
 
-                if (root.TryGetProperty("id", out var idProp) && idProp.ValueKind == JsonValueKind.String)
-                    return idProp.GetString()!;
+                LinkedInAccountInfoResponse response = new()
+                {
+                    Name = root.GetProperty("name").ToString(),
+                    Sub = root.GetProperty("sub").ToString(),
+                    PFPurl = root.GetProperty("picture").ToString()
+                };
 
-                if (root.TryGetProperty("sub", out var subProp) && subProp.ValueKind == JsonValueKind.String)
-                    return subProp.GetString()!;
+                return response;
 
-                throw new BadRequestException($"Unable to locate person id in LinkedIn response: {json}");
-            }
-            catch (BadRequestException)
-            {
-                throw;
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to parse person id from LinkedIn response.", ex);
+                throw new BadRequestException("Failed to parse data from LinkedIn response.", ex);
             }
         }
 
@@ -100,7 +100,10 @@ namespace tr_service.LinkedIn
                 {
                     com_linkedin_ugc_ShareContent = new
                     {
-                        shareCommentary = new { text },
+                        shareCommentary = new 
+                        {
+                            text 
+                        },
                         shareMediaCategory = "NONE"
                     }
                 },

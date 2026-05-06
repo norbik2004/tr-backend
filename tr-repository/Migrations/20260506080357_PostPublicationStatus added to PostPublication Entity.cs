@@ -13,7 +13,7 @@ namespace tr_repository.Migrations
             migrationBuilder.AlterColumn<int>(
                 name: "Status",
                 table: "PostPublications",
-                type: "integer",
+                type: "text",
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
