@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using tr_core.DTO.LinkedIn;
+using tr_core.DTO.LinkedIn.Request;
 using tr_core.Services;
 using tr_service.Exceptions;
 
@@ -81,11 +82,11 @@ namespace tr_service.LinkedIn
             }
         }
 
-        public async Task PostTextAsync(LinkedInPostDTO linkedInPostDTO)
+        public async Task PostTextAsync(LinkedInPostRequest request)
         {
-            var accessToken = linkedInPostDTO.UserPlatform.AccessToken;
-            var authorUrn = $"urn:li:person:{linkedInPostDTO.UserPlatform.ExternalAccountId}";
-            var text = linkedInPostDTO.Request.Text;
+            var accessToken = request.AccessToken;
+            var authorUrn = $"urn:li:person:{request.ExternalAccountId}";
+            var text = request.Content;
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             client.DefaultRequestHeaders.Remove("X-Restli-Protocol-Version");

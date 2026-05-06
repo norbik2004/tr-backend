@@ -64,26 +64,5 @@ namespace tr_backend.Controllers
             return Ok(result);
         }
 
-        [Obsolete("This endpoint is deprecated and will be removed in future versions. Please use the new endpoint for creating LinkedIn posts.")]
-        [HttpPost("post")]
-        public async Task<IActionResult> CreatePost([FromBody] LinkedInPostRequest request)
-        {
-            var userId = UserHelpers.GetUserIdFromClaims(User);
-            var userPlatform = await userPlatformService.GetUserPlatformByIdAsync(request.UserPlatformId, userId);
-
-            if (string.IsNullOrEmpty(userPlatform.AccessToken) || string.IsNullOrEmpty(userPlatform.ExternalAccountId))
-                return BadRequest("Missing access token or external account id for the selected platform");
-
-            var linkedInPostDTO = new LinkedInPostDTO
-            {
-                UserPlatform = userPlatform,
-                Request = request
-            };
-
-            await linkedInService.PostTextAsync(linkedInPostDTO);
-
-            return Ok();
-        }
-
     }
 }
