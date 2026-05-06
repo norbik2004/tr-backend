@@ -11,6 +11,7 @@ namespace tr_core.DTO.UserPlatform.Response
     {
         public int Id { get; set; }
         public required string AccountUsername { get; set; }
+        public required string AccountComment { get; set; }
         public PlatformResponse Platform { get; set; } = new PlatformResponse();
     }
 }
