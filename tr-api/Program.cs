@@ -18,10 +18,20 @@ using tr_service.Services;
 using tr_service.LinkedIn;
 using Microsoft.AspNetCore.Http;
 using AspNet.Security.OAuth.LinkedIn;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
 DotEnv.Load();
+
+builder.Services.AddSingleton<StripeClient>(_ =>
+{
+    var apiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+    if (string.IsNullOrWhiteSpace(apiKey))
+        throw new Exception("Missing STRIPE_SECRET_KEY in environmental variables");
+
+    return new StripeClient(apiKey);
+});
 
 builder.Services.AddSingleton<Client>(sp =>
 {
@@ -139,6 +149,7 @@ builder.Services.AddScoped<IPlatformService, PlatformService>();
 builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
 builder.Services.AddScoped<IUserPlatformRepository, UserPlatformRepository>();
 builder.Services.AddScoped<IUserPlatformService, UserPlatformService>();
+builder.Services.AddScoped<IStripeService, StripeService>();
 
 builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddSingleton<GeminiLLMConfig>();
