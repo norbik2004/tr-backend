@@ -13,6 +13,8 @@ namespace tr_core.Entities
         public string? StripeCustomerId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int PostsGeneratedThisMonth { get; set; } = 0;
+        public DateTime PostsCounterResetAt { get; set; } = DateTime.UtcNow;
         //POSTY USERA
         public ICollection<Post> Posts { get; set; } = new List<Post>();
         //PLATFORMY USERA

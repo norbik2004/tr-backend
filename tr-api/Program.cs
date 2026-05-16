@@ -19,6 +19,7 @@ using tr_service.LinkedIn;
 using Microsoft.AspNetCore.Http;
 using AspNet.Security.OAuth.LinkedIn;
 using Stripe;
+using tr_service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,9 @@ builder.Services.AddAuthentication()
     });
 
 builder.Services.AddHttpClient<ILinkedInService, LinkedInService>();
+
+builder.Services.Configure<PostLimitConfig>(
+    builder.Configuration.GetSection("PostLimits"));
 
 builder.Services.AddDbContext<TrDbContext>(options =>
     options.UseNpgsql(
