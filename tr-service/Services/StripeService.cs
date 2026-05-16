@@ -15,7 +15,7 @@ using tr_repository;
 
 namespace tr_service.Services
 {
-    public class StripeService(StripeClient stripeClient, TrDbContext db) : IStripeService
+    public class StripeService(StripeClient stripeClient, IUserService userService) : IStripeService
     {
 
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSessionAsync(StripeCheckoutDTO stripeCheckout)
@@ -41,7 +41,7 @@ namespace tr_service.Services
                 throw new ArgumentException("No Stripe price found for the provided lookupKey");
 
             // Jeśli user ma już customerId w Stripe, przekazujemy go — Stripe nie stworzy duplikatu
-            var user = await db.Users.FindAsync(stripeCheckout.userId);
+            var user = await userService.GetLoggedInUserInfoAsync(stripeCheckout.userId);
             var existingCustomerId = user?.StripeCustomerId;
 
             var sessionOptions = new SessionCreateOptions
@@ -70,6 +70,8 @@ namespace tr_service.Services
             // Jeśli mamy już customerId — przekazujemy go, żeby Stripe nie tworzył nowego klienta
             if (!string.IsNullOrWhiteSpace(existingCustomerId))
                 sessionOptions.Customer = existingCustomerId;
+            else
+                sessionOptions.CustomerEmail = stripeCheckout.userEmail;
 
             var sessionService = new SessionService(stripeClient);
             var session = await sessionService.CreateAsync(sessionOptions);
@@ -79,8 +81,7 @@ namespace tr_service.Services
 
         public async Task<CreatePortalSessionResponse> CreatePortalSessionAsync(string userId, string returnUrl)
         {
-            var user = await db.Users.FindAsync(userId)
-                ?? throw new KeyNotFoundException("User not found");
+            var user = await userService.GetLoggedInUserInfoAsync(userId);
 
             if (string.IsNullOrWhiteSpace(user.StripeCustomerId))
                 throw new InvalidOperationException("User does not have an active Stripe subscription");
@@ -123,23 +124,16 @@ namespace tr_service.Services
             var userId = subscription.Metadata.GetValueOrDefault("userId");
             if (string.IsNullOrWhiteSpace(userId)) return;
 
-            var user = await db.Users.FindAsync(userId);
-            if (user is null) return;
-
-            user.StripeCustomerId = subscription.CustomerId;
-            user.IsSubscribed = subscription.Status == "active";
-            await db.SaveChangesAsync();
+            await userService.SetStripeCustomerId(userId, subscription.CustomerId);
+            await userService.UpdateSubsciptionStatus(userId, subscription.Status == "active");
         }
 
         private async Task HandleSubscriptionDeletedAsync(Subscription subscription)
         {
-            var user = await db.Users
-                .FirstOrDefaultAsync(u => u.StripeCustomerId == subscription.CustomerId);
+            var userId = subscription.Metadata.GetValueOrDefault("userId");
+            if (string.IsNullOrWhiteSpace(userId)) return;
 
-            if (user is null) return;
-
-            user.IsSubscribed = false;
-            await db.SaveChangesAsync();
+            await userService.UpdateSubsciptionStatus(userId, subscription.Status == "active");
         }
     }
 }

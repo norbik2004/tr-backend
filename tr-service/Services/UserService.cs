@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Stripe;
 using tr_core.Consts;
 using tr_core.DTO.User.Request;
 using tr_core.DTO.User.Response;
@@ -73,6 +74,26 @@ namespace tr_service.Services
             };
 
             user.UserSettings = settings;
+            await userRepository.SaveChangesAsync();
+        }
+
+        public async Task SetStripeCustomerId(string userId, string customerId)
+        {
+            var user = await userRepository.GetByIdAsync(userId)
+                ?? throw new NotFoundException("User not found");
+
+            user.StripeCustomerId = customerId;
+
+            await userRepository.SaveChangesAsync();
+        }
+
+        public async Task UpdateSubsciptionStatus(string userId, bool status)
+        {
+            var user = await userRepository.GetByIdAsync(userId)
+                ?? throw new NotFoundException("User not found");
+
+            user.IsSubscribed = status;
+
             await userRepository.SaveChangesAsync();
         }
     }
